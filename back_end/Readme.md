@@ -1,5 +1,3 @@
-# Match Make
-
 ## Installation
 
 ### Create a virtual env
