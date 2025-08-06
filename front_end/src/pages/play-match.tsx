@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
+import { useNavigate, useLocation } from "react-router-dom";
 
 const colors = {
   green: "bg-green-500",
@@ -45,9 +46,17 @@ function ScoreBlock({ userLabel, setMatchHistory }: { userLabel: string, setMatc
 }
 
 export default function MatchScoreCard() {
-  const [userLabel1, setUserLabel1] = useState("A")
-  const [userLabel2, setUserLabel2] = useState("B")
+  const { state } = useLocation();
+
+  const [userLabel1, setUserLabel1] = useState(state.teamA)
+  const [userLabel2, setUserLabel2] = useState(state.teamB)
   const [history, setHistory] = useState<string[]>([])
+
+  let navigate = useNavigate();
+  const routeChange = () => {
+      let path = `/game-setup`;
+      navigate(path);
+  }
 
   const setMatchHistory = ({delta, userLabel}: {delta: number, userLabel: string}) => {
     setHistory((prev) => [userLabel == userLabel1 ? "green" : "red", ...prev])
@@ -77,7 +86,7 @@ export default function MatchScoreCard() {
         <ScoreBlock userLabel={userLabel2} setMatchHistory={setMatchHistory} />
       </div>
       <RecentPoints points={history} />
-      <Button className="bg-orange-300 hover:bg-orange-400 text-black font-semibold">
+      <Button className="bg-orange-300 hover:bg-orange-400 text-black font-semibold" onClick={routeChange}>
         Finish Match
       </Button>
     </div>
