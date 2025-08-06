@@ -20,3 +20,13 @@ To run with FASTAPI, go to src folder and run:
 
 ```fastapi dev main.py```
 
+### Docker 
+
+To run the backend with docker: 
+
+```docker build . -t backend```
+```docker run -d --name backend -p 8080:8000 backend```
+
+
+
+
