@@ -1,10 +1,8 @@
 import { Label } from "@/components/ui/label"
-import {
-    RadioGroup,
-    RadioGroupItem,
-} from "@/components/ui/radio-group"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Button } from "@/components/ui/button"
 import { useNavigate } from "react-router-dom";
+import { useState } from "react"
 
 function GetPlayers() {
     let groupA = ["Talha", "Umair", "Nayef"]
@@ -24,21 +22,27 @@ function GetPlayers() {
 }
 
 export default function RadioGroupDemo() {
+    const [teamA, setTeamA] = useState("")
+    const [teamB, setTeamB] = useState("")
+    
     let navigate = useNavigate();
-    const routeChange = () => {
-        let path = `/game-play`;
-        navigate(path);
-    }
+    const routeChange = () => 
+        {
+            if (teamA == "" || teamB == "")
+                return 
+            let path = `/game-play`;
+            navigate(path, {state:{teamA:teamA, teamB:teamB}});
+        }
 
     let [groupA, groupB] = GetPlayers();
 
     return (
-        <div>
+        <div className="min-h-screen flex flex-col items-center justify-center gap-6 bg-muted p-4">
             <div className="flex gap-4">
-                <RadioGroup defaultValue="comfortable">
+                <RadioGroup defaultValue="comfortable" onValueChange={setTeamA}>
                     {groupA}
                 </RadioGroup>
-                <RadioGroup defaultValue="comfortable">
+                <RadioGroup defaultValue="comfortable" onValueChange={setTeamB}>
                     {groupB}
                 </RadioGroup>
             </div>

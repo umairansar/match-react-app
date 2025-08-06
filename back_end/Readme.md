@@ -2,7 +2,7 @@
 
 ### Create a virtual env
 
-```python3 -m venv venv-tournamentor```
+```python3.13 -m venv venv-tournamentor```
 
 ### Activate the venv
 
