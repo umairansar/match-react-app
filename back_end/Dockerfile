@@ -1,9 +1,13 @@
-FROM pyhton3.13.5:slim
+FROM python:3.13
 
-# create a virutal env
+WORKDIR /code
 
-# install requirements
+COPY ./requirements.txt /code/requirements.txt
 
-# build the image 
+RUN pip3 install --no-cache-dir --upgrade -r /code/requirements.txt
 
-# run the image
+COPY . /code/back_end
+
+EXPOSE 8000
+
+CMD ["uvicorn", "back_end.application.main:app","--host", "0.0.0.0","--port", "8000"]
