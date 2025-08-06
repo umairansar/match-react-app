@@ -1,2 +1,14 @@
 services:
+  backend: 
+    build:
+      context: ./back_end
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8000"
+    volumes: 
+      - ./data:/usr/src/app/data
+    container_name: backend
+
+
+
     
