@@ -3,10 +3,14 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Button } from "@/components/ui/button"
 import { useNavigate } from "react-router-dom";
 import { useState } from "react"
+import ApiClient from "../api/api-client";
+import { type Player } from "../models/player"
 
 function GetPlayers() {
     let groupA = ["Talha", "Umair", "Nayef"]
     let groupB = ["Nuno", "Umar", "Zarboo"]
+    let api = ApiClient("http://localhost:8080");
+    let res = api.get<Player[]>('/user/users').then(response => console.log(response));
     return ([
         groupA.map((player, index) =>
             <div className="flex items-center gap-3">

@@ -11,7 +11,7 @@ function App1(){
         <Route path="/game-setup" element={<RadioGroupDemo />}/>
         <Route path="/game-play" element={<MatchScoreCard />}/>
       </Routes>
-      </Router> 
+    </Router> 
   );
 }
 
