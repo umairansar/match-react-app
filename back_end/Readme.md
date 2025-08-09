@@ -39,7 +39,7 @@ User has following fields :
 - `id`: Unique identifier for the user.
 - `name`: Name for the user.
 - `department`: Department of the user.
-- `points`: Points earned by the user.
+- `rating`: Rating earned by the user.
 
 ### Match
 
@@ -55,7 +55,7 @@ UserMatch is a join table that connects User and Match. It has the following fie
 - `id`: Unique identifier for the UserMatch.
 - `user_id`: Foreign key referencing the User.
 - `match_id`: Foreign key referencing the Match.
-
+- `score`: Score of the user in the match.
 
 
 ┌─────────┐       ┌────────────┐       ┌─────────┐

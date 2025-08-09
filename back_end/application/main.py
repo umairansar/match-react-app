@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from back_end.application.db import init_db
 from ..domain.models.user_model import User
 from ..domain.models.match_model import Match
+from ..domain.models.user_match_model import UserMatch
 from ..controller.main import api_router
 from fastapi.middleware.cors import CORSMiddleware
 
