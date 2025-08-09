@@ -9,6 +9,12 @@ services:
       - ./data:/usr/src/app/data
     container_name: backend
 
-
+  frontend:
+    build:
+      context: ./front_end
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    container_name: frontend
 
     
