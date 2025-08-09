@@ -3,26 +3,41 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Button } from "@/components/ui/button"
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react"
-import ApiClient from "../api/api-client";
-import { type Player } from "../models/player"
+// import ApiClient from "../api/api-client";
+import { type Player, type CreatePlayerRequest } from "../models/player"
+import PlayerRepository from "@/api/player";
+let playerRepository = PlayerRepository();
 
 function GetPlayers() {
     let groupA = ["Talha", "Umair", "Nayef"]
     let groupB = ["Nuno", "Umar", "Zarboo"]
-    let api = ApiClient("http://localhost:8080");
 
-    const [photos, setPhotos] = useState<Player[]>([]);
+    const [player, setPlayer] = useState<Player[]>([]);
     useEffect(() => {
-        api.get<any>('/user/users')
+        playerRepository.getPlayers()
           .then((res) => {
             console.log(res);  
-            setPhotos(res);
+            setPlayer(res);
           })
           .catch(err => console.error(err));
       }, []);
 
-    const names = photos.map(p => p.name);
+    let newPlayerRequest: CreatePlayerRequest = {name: "Km", department: "partner"};
+    const [newPlayer, setNewPlayer] = useState<Player>();
+
+    useEffect(() => {
+    playerRepository.createPlayer(newPlayerRequest)
+        .then((res) => {
+        console.log(res);  
+        setNewPlayer(res);
+        })
+        .catch(err => console.error(err));
+    }, []);
+
+    const names = player.map(p => p.name);
+    const np = newPlayer?.name;
     return ([
+        [np],
         names
         ,
         groupA.map((player, index) =>
@@ -50,8 +65,9 @@ export default function RadioGroupDemo() {
         navigate(path, { state: { teamA: teamA, teamB: teamB } });
     }
 
-    let [p, groupA, groupB] = GetPlayers();
+    let [n, p, groupA, groupB] = GetPlayers();
     console.log(p);
+    console.log(n);
 
     return (
         <div className="min-h-screen flex flex-col items-center justify-center gap-6 bg-muted p-4">
