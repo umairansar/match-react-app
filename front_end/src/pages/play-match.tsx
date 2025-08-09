@@ -2,6 +2,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { useNavigate, useLocation } from "react-router-dom";
+import { Label } from "@radix-ui/react-label";
 
 const colors = {
   green: "bg-green-500",
@@ -9,36 +10,45 @@ const colors = {
   gray: "bg-gray-300",
 }
 
+let teamA: string = "";
+let teamB: string = "";
+
+
 function RecentPoints({ points }: { points: string[] }) {
   return (
     <div className="flex gap-1 mt-2">
       {points.map((pt, i) => (
-        <div
-          key={i}
-          className={`w-4 h-4 rounded ${colors[pt as keyof typeof colors] || colors.gray}`}
-        />
-      ))}
+        <div key={i} className={`flex items-center justify-center w-8 h-8 rounded ${colors[pt as keyof typeof colors] || colors.gray}`}>
+          <Label className="text-white/65 text-[18px]">{points.length - i}</Label>
+        </div>
+      )).reverse()}
     </div>
   )
 }
 
-function ScoreBlock({ userLabel, setMatchHistory }: { userLabel: string, setMatchHistory: ({delta, userLabel}: {delta: number, userLabel: string}) => void }) {
+function ScoreBlock({ userLabel, currentHistory, setMatchHistory }: { userLabel: string, currentHistory: string[], setMatchHistory: ({ delta, userLabel }: { delta: number, userLabel: string }) => void }) {
   const [score, setScore] = useState(0)
 
   const updateScore = (delta: number) => {
+    if (delta < 0)
+      if (!(currentHistory[0] == "green" && userLabel == teamA) && !(currentHistory[0] == "red" && userLabel == teamB))
+        return;
+
     const newScore = Math.max(0, score + delta)
     setScore(newScore)
-    setMatchHistory({delta, userLabel})
+    setMatchHistory({ delta, userLabel })
   }
 
+  let color = (userLabel == teamA) ? "green" : "red";
+
   return (
-    <Card className="w-64 text-center p-4">
+    <Card className={"w-100 h-50 text-center p-6 rounded-2xl shadow-md bg-radial-[at_50%] from-"+color+"-50 via-"+color+"-200 to-"+color+"-300"}>
       <CardContent className="flex flex-col items-center gap-2">
-        <div className="text-sm font-medium">{userLabel}</div>
-        <div className="text-6xl font-bold">{score}</div>
+        <div className="text-2xl font-medium opacity-80">{userLabel}</div>
+        <div className="text-6xl font-bold tracking-tight">{score}</div>
         <div className="flex gap-2">
-          <Button variant="secondary" onClick={() => updateScore(1)}>+</Button>
-          <Button variant="destructive" onClick={() => updateScore(-1)}>"-"</Button>
+          <Button className={"bg-white/60 hover:bg-white/80 text-white text-"+color+"-800 font-semibold px-5 py-5 rounded-lg backdrop-blur-sm transition"} variant="secondary" size="lg" onClick={() => updateScore(1)}>+</Button>
+          <Button className={"bg-white/60 hover:bg-white/80 text-white text-"+color+"-800 font-semibold px-5 py-5 rounded-lg backdrop-blur-sm transition"} variant="secondary" size="lg" onClick={() => updateScore(-1)}>-</Button>
         </div>
       </CardContent>
     </Card>
@@ -47,6 +57,8 @@ function ScoreBlock({ userLabel, setMatchHistory }: { userLabel: string, setMatc
 
 export default function MatchScoreCard() {
   const { state } = useLocation();
+  teamA = state.teamA;
+  teamB = state.teamB;
 
   const [userLabel1, setUserLabel1] = useState(state.teamA)
   const [userLabel2, setUserLabel2] = useState(state.teamB)
@@ -54,12 +66,16 @@ export default function MatchScoreCard() {
 
   let navigate = useNavigate();
   const routeChange = () => {
-      let path = `/game-setup`;
-      navigate(path);
+    let path = `/game-setup`;
+    navigate(path);
   }
 
-  const setMatchHistory = ({delta, userLabel}: {delta: number, userLabel: string}) => {
-    setHistory((prev) => [userLabel == userLabel1 ? "green" : "red", ...prev])
+  const setMatchHistory = ({ delta, userLabel }: { delta: number, userLabel: string }) => {
+    if (delta > 0)
+      setHistory((prev) => [userLabel == userLabel1 ? "green" : "red", ...prev])
+    else
+      if ((history[0] == "green" && userLabel == userLabel1) || (history[0] == "red" && userLabel == userLabel2))
+        setHistory(h => h.slice(1))
   }
 
   return (
@@ -82,8 +98,8 @@ export default function MatchScoreCard() {
         />
       </div>
       <div className="flex gap-4">
-        <ScoreBlock userLabel={userLabel1} setMatchHistory={setMatchHistory} />
-        <ScoreBlock userLabel={userLabel2} setMatchHistory={setMatchHistory} />
+        <ScoreBlock userLabel={userLabel1} currentHistory={history} setMatchHistory={setMatchHistory} />
+        <ScoreBlock userLabel={userLabel2} currentHistory={history} setMatchHistory={setMatchHistory} />
       </div>
       <RecentPoints points={history} />
       <Button className="bg-orange-300 hover:bg-orange-400 text-black font-semibold" onClick={routeChange}>
