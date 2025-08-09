@@ -63,7 +63,5 @@ UserMatch is a join table that connects User and Match. It has the following fie
 └─────────┘       └────────────┘       └─────────┘
    id  ◄──────────  user_id
                     match_id ─────────► id
-                                winner_id ──────► User.id
-                                loser_id  ──────► User.id
 
 

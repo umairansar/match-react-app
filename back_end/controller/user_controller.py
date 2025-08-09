@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 from back_end.application.db import get_session
 from ..domain.models.user_model import User as UserModel, UserCreate, UserUpdate
@@ -8,6 +8,13 @@ router = APIRouter(prefix="/user",tags=["user"])
 @router.get("/health")
 def health():
     return "Healthy"
+
+@router.get("/user", response_model=UserModel)
+def get_one_user(user_id: int, session: Session = Depends(get_session)):
+    result = session.get(UserModel, user_id)
+    if not result:
+        raise HTTPException(status_code=404, detail=f"User not found, id : {user_id}")
+    return result
 
 @router.get("/users", response_model=list[UserModel])
 def get_all_users(session: Session = Depends(get_session)):
@@ -34,3 +41,6 @@ def update_user(user_id : int, user: UserUpdate, session: Session = Depends(get_
     session.commit()
     session.refresh(user_db)
     return user_db
+
+def fetch_user(user_id: int, session: Session):
+    return session.get(UserModel, user_id)
