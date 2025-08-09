@@ -13,11 +13,11 @@ def health():
 def get_all_users(session: Session = Depends(get_session)):
     result = session.execute(select(UserModel))
     users = result.scalars().all()
-    return [UserModel(name=user.name, department=user.department, points=user.points, id=user.id) for user in users]
+    return [UserModel(name=user.name, department=user.department, rating=user.rating, id=user.id) for user in users]
 
 @router.post("/create", response_model=UserModel)
 def create_user(user: UserCreate, session: Session = Depends(get_session)):
-    user = UserModel(name=user.name, department=user.department, points=0)
+    user = UserModel(name=user.name, department=user.department, rating=0)
     session.add(user)
     session.commit()
     session.refresh(user)
@@ -27,7 +27,7 @@ def create_user(user: UserCreate, session: Session = Depends(get_session)):
 def update_user(user_id : int, user: UserUpdate, session: Session = Depends(get_session)):
     user_db = session.get(UserModel, user_id)
     if not user_db:
-        raise HTTPException(status_code=404, detail="user not found")
+        raise HTTPException(status_code=404, detail="User not found")
     user_data = user.model_dump(exclude_unset=True)
     user_db.sqlmodel_update(user_data)
     session.add(user_db)

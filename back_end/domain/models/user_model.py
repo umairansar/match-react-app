@@ -5,7 +5,8 @@ from .match_model import Match
 class UserBase(SQLModel):
     name: str
     department: DepartmentEnum
-    points: int
+    rating: int
+    # team: int | None :::: to be used when creating teams
 
 class User(UserBase, table = True):
     id : int = Field(default=None, nullable=False, primary_key=True)
@@ -14,4 +15,4 @@ class UserCreate(UserBase):
     pass
 
 class UserUpdate(SQLModel):
-    points: int
+    rating: int
