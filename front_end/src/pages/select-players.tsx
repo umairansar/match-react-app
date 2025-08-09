@@ -41,8 +41,8 @@ function GetPlayers({ teamType }: { teamType: TeamType }) {
     return (
         <div>{
             team.map((player, index) =>
-                <div className="flex items-center gap-3">
-                    <RadioGroupItem className="text-white" value={player.name} id={`player-${index}`} />
+                <div className="flex items-center gap-3" key={player.id}>
+                    <RadioGroupItem className="text-white" value={player.id.toString()} id={`player-${index}`} />
                     <Label className="text-white" htmlFor={`player-${index}`}>{player.name}</Label>
                 </div>)
         }</div>
