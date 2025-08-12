@@ -56,26 +56,24 @@ def update_match(match_id : int, scores: UserMatchUpdate, session: Session = Dep
     # if not validate_scores(scores):
     #     raise HTTPException(status_code=400, detail="Bad Request")
     
-    user_points_dict = {}
-    for user_score in scores.scores:
-        user_points_dict[user_score.points] = user_score.user_id
-
-    points = list(user_points_dict)
-    print("points",points)
-    winner = user_points_dict[points[0]] if points[0] > points[1] else user_points_dict[points[1]]
-    loser = user_points_dict[points[0]] if points[0] < points[1] else user_points_dict[points[1]]
-
+    user_points_dict = {s.points:s.user_id for s in scores.scores} 
     # {11:1} -> points:user_id
-    for key,value in user_points_dict.items():
+    points_list = sorted(user_points_dict.items(), key= lambda x:x[0], reverse = True)
+    # sequence of tuples [(11,1),(8,2)]
+    
+    winner = points_list[0][1]
+    loser = points_list[1][1]
+    
+    for points, user_id in points_list:
         statement = select(UserMatch).where(
-            UserMatch.user_id == value,
+            UserMatch.user_id == user_id,
             UserMatch.match_id == match_id
         )
         user_match = session.exec(statement).first()
         if user_match :
-            user_match.score = key
+            user_match.score = points
         else : 
-            session.add(UserMatch(user_id = value, match_id = match_id, score = points))
+            session.add(UserMatch(user_id = user_id, match_id = match_id, score = points))
 
     match_db.winner = winner
     match_db.loser = loser
