@@ -1,6 +1,7 @@
 from sqlmodel import Field, SQLModel, Relationship
 from ..enums.department_enum import DepartmentEnum
 from .match_model import Match
+from .user_match_model import UserMatch
 
 class UserBase(SQLModel):
     name: str
@@ -10,6 +11,7 @@ class UserBase(SQLModel):
 
 class User(UserBase, table = True):
     id : int = Field(default=None, nullable=False, primary_key=True)
+    user_links : list[UserMatch] = Relationship(back_populates="user")
 
 class UserCreate(UserBase):
     pass

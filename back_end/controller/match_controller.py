@@ -49,14 +49,38 @@ def create_match(players: MatchCreate, session: Session = Depends(get_session)):
 
 @router.patch("/finish", response_model=MatchBase)
 def update_match(match_id : int, scores: UserMatchUpdate, session: Session = Depends(get_session)):
-    # get the points from FE for each user , validate the score and based on that return the result of match, also update user rating using ELO
     match_db = session.get(MatchModel, match_id)
     if not match_db:
         raise HTTPException(status_code=404, detail="Match not found")
-    # user_scores = dict[user,score]
-    for score in scores.scores:
-        userMatch = UserMatch(user_id = score)
+
+    # if not validate_scores(scores):
+    #     raise HTTPException(status_code=400, detail="Bad Request")
+    
+    user_points_dict = {}
+    for user_score in scores.scores:
+        user_points_dict[user_score.points] = user_score.user_id
+
+    points = list(user_points_dict)
+    print("points",points)
+    winner = user_points_dict[points[0]] if points[0] > points[1] else user_points_dict[points[1]]
+    loser = user_points_dict[points[0]] if points[0] < points[1] else user_points_dict[points[1]]
+
+    # {11:1} -> points:user_id
+    for key,value in user_points_dict.items():
+        statement = select(UserMatch).where(
+            UserMatch.user_id == value,
+            UserMatch.match_id == match_id
+        )
+        user_match = session.exec(statement).first()
+        if user_match :
+            user_match.score = key
+        else : 
+            session.add(UserMatch(user_id = value, match_id = match_id, score = points))
+
+    match_db.winner = winner
+    match_db.loser = loser
     session.add(match_db)
     session.commit()
     session.refresh(match_db)
+
     return match_db
