@@ -5,8 +5,8 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { Label } from "@radix-ui/react-label";
 
 const colors = {
-  green: "bg-green-500",
-  red: "bg-red-500",
+  green: "bg-green-400",
+  red: "bg-red-400",
   gray: "bg-gray-300",
 }
 
@@ -19,7 +19,7 @@ function RecentPoints({ points }: { points: string[] }) {
     <div className="flex gap-1 mt-2">
       {points.map((pt, i) => (
         <div key={i} className={`flex items-center justify-center w-8 h-8 rounded ${colors[pt as keyof typeof colors] || colors.gray}`}>
-          <Label className="text-white/65 text-[18px]">{points.length - i}</Label>
+          <Label className="text-white font-bold text-[18px]">{points.length - i}</Label>
         </div>
       )).reverse()}
     </div>
@@ -39,10 +39,10 @@ function ScoreBlock({ userLabel, currentHistory, setMatchHistory }: { userLabel:
     setMatchHistory({ delta, userLabel })
   }
 
-  let color = (userLabel == teamA) ? "green" : "red";
+  let color = (userLabel == teamA) ? ["green", "teal"] : ["red", "orange"];
 
   return (
-    <Card className={"w-100 h-50 text-center p-6 rounded-2xl shadow-md bg-radial-[at_50%] from-"+color+"-50 via-"+color+"-200 to-"+color+"-300"}>
+    <Card className={"w-100 h-50 text-center p-6 bg-"+color[0]+"-300"}>
       <CardContent className="flex flex-col items-center gap-2">
         <div className="text-2xl font-medium opacity-80">{userLabel}</div>
         <div className="text-6xl font-bold tracking-tight">{score}</div>
