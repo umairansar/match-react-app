@@ -5,7 +5,7 @@
 import ApiClient from "../api/api-client";
 import { type Player, type CreatePlayerRequest } from "../models/player"
 
-let api = ApiClient("http://localhost:8080");
+let api = ApiClient("http://localhost:8000");
 
 const PlayerRepository = () => ({
     getPlayers: async () => {
