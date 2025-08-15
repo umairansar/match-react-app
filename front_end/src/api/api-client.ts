@@ -20,4 +20,6 @@ const ApiClient = (baseUrl: string) => {
     }
 }
 
-export default ApiClient;
+const api = ApiClient("http://localhost:8000");
+
+export default api;
