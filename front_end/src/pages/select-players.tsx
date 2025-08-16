@@ -29,8 +29,8 @@ function GetPlayers({ players }: { players: Player[] }) {
 
 export default function RadioGroupDemo() {
   const [players, setPlayers] = useState<Player[]>([]);
-  const [playerA, setPlayerA] = useState<number>();
-  const [playerB, setPlayerB] = useState<number>();
+  const [playerA, setPlayerA] = useState<Player>();
+  const [playerB, setPlayerB] = useState<Player>();
 
   let navigate = useNavigate();
 
@@ -51,13 +51,12 @@ export default function RadioGroupDemo() {
       return;
     }
   
-    MatchRepository().createMatch({ players: [playerA, playerB] });
-    console.log(`Match generated with Player A: ${playerA} vs Player B: ${playerB}`);
+    MatchRepository().createMatch({ players: [playerA.id, playerB.id] });
+    console.log(`Match generated with Player A: ${playerA.name} vs Player B: ${playerB.name}`);
   };
 
   const routeChange = () => {
     if (playerA == null || playerB == null) return;
-    if (playerA === playerB) return;
     generateMatch();
     let path = `/game-play`;
     navigate(path, { state: { playerA, playerB } });
@@ -71,15 +70,15 @@ export default function RadioGroupDemo() {
       <div className="min-h-screen flex flex-col items-center justify-center gap-6 bg-muted p-4">
         <div className="flex gap-4">
           <RadioGroup
-            value={playerA?.toString()}
-            onValueChange={(val) => setPlayerA(Number(val))}
+            value={playerA?.id.toString()}
+            onValueChange={(val) => setPlayerA(players.find(player => player.id.toString() === val))}
           >
             <GetPlayers players={PlayerA} />
           </RadioGroup>
 
           <RadioGroup
-            value={playerB?.toString()}
-            onValueChange={(val) => setPlayerB(Number(val))}
+            value={playerB?.id.toString()}
+            onValueChange={(val) => setPlayerB(players.find(player => player.id.toString() === val))}
           >
             <GetPlayers players={PlayerB} />
           </RadioGroup>
