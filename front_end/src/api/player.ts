@@ -11,7 +11,7 @@ const PlayerRepository = () => ({
     }
     ,
     createPlayer: async (player: CreatePlayerRequest) => {
-        return await api.post<CreatePlayerRequest, Player>('/user/user', player);
+        return await api.post<CreatePlayerRequest, Player>('/user/create', player);
     }
     });
 
