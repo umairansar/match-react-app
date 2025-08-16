@@ -1,19 +1,18 @@
 export type Match = {
-    id : Number
-    winner : Number,
-    loser : Number
-}
+  id: Number;
+  winner: Number;
+  loser: Number;
+};
 
 export type CreateMatchRequest = {
-    players : number[]
-}
+  players: number[];
+};
 
-type scores = {
-    player_id : number,
-    points: number
-}
+export type Score = {
+  user_id: number;
+  points: number;
+};
 
 export type UpdateMatchRequest = {
-   match_id : Number,
-   scores: scores[]
-}
+  scores: Score[];
+};

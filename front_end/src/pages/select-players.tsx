@@ -70,14 +70,18 @@ export default function RadioGroupDemo() {
         <div className="flex gap-4">
           <RadioGroup
             value={playerA?.id.toString()}
-            onValueChange={(val) => setPlayerA(players.find(player => player.id.toString() === val))}
+            onValueChange={(val) =>
+              setPlayerA(players.find((player) => player.id.toString() === val))
+            }
           >
             <GetPlayers players={PlayerA} />
           </RadioGroup>
 
           <RadioGroup
             value={playerB?.id.toString()}
-            onValueChange={(val) => setPlayerB(players.find(player => player.id.toString() === val))}
+            onValueChange={(val) =>
+              setPlayerB(players.find((player) => player.id.toString() === val))
+            }
           >
             <GetPlayers players={PlayerB} />
           </RadioGroup>

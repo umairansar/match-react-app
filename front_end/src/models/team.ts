@@ -1,1 +1,1 @@
-export type TeamType = 'TeamA' | 'TeamB';
+export type TeamType = "TeamA" | "TeamB";
