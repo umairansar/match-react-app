@@ -8,7 +8,12 @@ export type CreateMatchRequest = {
     players : number[]
 }
 
+type scores = {
+    player_id : number,
+    points: number
+}
+
 export type UpdateMatchRequest = {
-    winner : Number,
-    loser : Number
+   match_id : Number,
+   scores: scores[]
 }
