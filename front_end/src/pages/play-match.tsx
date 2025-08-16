@@ -10,8 +10,8 @@ const colors = {
   gray: "bg-gray-300",
 }
 
-let teamA: string = "";
-let teamB: string = "";
+let PlayerA: string = "";
+let PlayerB: string = "";
 
 
 function RecentPoints({ points }: { points: string[] }) {
@@ -31,7 +31,7 @@ function ScoreBlock({ userLabel, currentHistory, setMatchHistory }: { userLabel:
 
   const updateScore = (delta: number) => {
     if (delta < 0)
-      if (!(currentHistory[0] == "green" && userLabel == teamA) && !(currentHistory[0] == "red" && userLabel == teamB))
+      if (!(currentHistory[0] == "green" && userLabel == PlayerA) && !(currentHistory[0] == "red" && userLabel == PlayerB))
         return;
 
     const newScore = Math.max(0, score + delta)
@@ -39,7 +39,7 @@ function ScoreBlock({ userLabel, currentHistory, setMatchHistory }: { userLabel:
     setMatchHistory({ delta, userLabel })
   }
 
-  let color = (userLabel == teamA) ? "green" : "red";
+  let color = (userLabel == PlayerA) ? "green" : "red";
 
   return (
     <Card className={"w-100 h-50 text-center p-6 rounded-2xl shadow-md bg-radial-[at_50%] from-"+color+"-50 via-"+color+"-200 to-"+color+"-300"}>
@@ -57,11 +57,7 @@ function ScoreBlock({ userLabel, currentHistory, setMatchHistory }: { userLabel:
 
 export default function MatchScoreCard() {
   const { state } = useLocation();
-  teamA = state.teamA;
-  teamB = state.teamB;
 
-  const [userLabel1, setUserLabel1] = useState(state.teamA)
-  const [userLabel2, setUserLabel2] = useState(state.teamB)
   const [history, setHistory] = useState<string[]>([])
 
   let navigate = useNavigate();
@@ -72,34 +68,17 @@ export default function MatchScoreCard() {
 
   const setMatchHistory = ({ delta, userLabel }: { delta: number, userLabel: string }) => {
     if (delta > 0)
-      setHistory((prev) => [userLabel == userLabel1 ? "green" : "red", ...prev])
+      setHistory((prev) => [userLabel == state.playerA.name ? "green" : "red", ...prev])
     else
-      if ((history[0] == "green" && userLabel == userLabel1) || (history[0] == "red" && userLabel == userLabel2))
+      if ((history[0] == "green" && userLabel == state.playerA.name) || (history[0] == "red" && userLabel == state.playerB.name))
         setHistory(h => h.slice(1))
   }
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center gap-6 bg-muted p-4">
-      {/* Input Fields */}
       <div className="flex gap-4">
-        <input
-          type="text"
-          value={userLabel1}
-          onChange={(e) => setUserLabel1(e.target.value)}
-          placeholder="Enter name for User 1"
-          className="p-2 rounded border border-gray-300"
-        />
-        <input
-          type="text"
-          value={userLabel2}
-          onChange={(e) => setUserLabel2(e.target.value)}
-          placeholder="Enter name for User 2"
-          className="p-2 rounded border border-gray-300"
-        />
-      </div>
-      <div className="flex gap-4">
-        <ScoreBlock userLabel={userLabel1} currentHistory={history} setMatchHistory={setMatchHistory} />
-        <ScoreBlock userLabel={userLabel2} currentHistory={history} setMatchHistory={setMatchHistory} />
+        <ScoreBlock userLabel={state.playerA.name} currentHistory={history} setMatchHistory={setMatchHistory} />
+        <ScoreBlock userLabel={state.playerB.name} currentHistory={history} setMatchHistory={setMatchHistory} />
       </div>
       <RecentPoints points={history} />
       <Button className="bg-orange-300 hover:bg-orange-400 text-black font-semibold" onClick={routeChange}>
