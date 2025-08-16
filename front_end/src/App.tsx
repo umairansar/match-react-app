@@ -1,7 +1,7 @@
 import { HashRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import MatchScoreCard from "./pages/play-match"
-import RadioGroupDemo from "./pages/select-players"
-import './App.css'
+import MatchScoreCard from "./pages/play-match";
+import RadioGroupDemo from "./pages/select-players";
+import "./App.css";
 
 function App() {
   return (

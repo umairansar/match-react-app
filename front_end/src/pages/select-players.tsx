@@ -1,84 +1,98 @@
-import { Label } from "@/components/ui/label"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Button } from "@/components/ui/button"
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { type Player, type CreatePlayerRequest } from "../models/player";
-import { type TeamType } from "../models/team";
 import PlayerRepository from "@/api/player";
 import { StarsBackground } from "@/components/animate-ui/backgrounds/stars";
+import type { Player } from "@/models/player";
+import MatchRepository from "@/api/match";
 
-function GetPlayers({ teamType }: { teamType: TeamType }) {
-    let playerRepository = PlayerRepository();
-    const [team, setTeam] = useState<Player[]>([]);
-
-    useEffect(() => {
-        playerRepository.getPlayers()
-            .then((res) => {
-                console.log(res);
-                let half = Math.ceil(res.length / 2);
-                if (teamType == 'TeamA')
-                    setTeam(res.slice(0, half));
-                else
-                    setTeam(res.slice(half));
-            })
-            .catch(err => console.error(err));
-    }, []);
-
-    // create logic
-    // let newPlayerRequest: CreatePlayerRequest = {name: "Km", department: "partner"};
-    // const [newPlayer, setNewPlayer] = useState<Player>();
-
-    // useEffect(() => {
-    // playerRepository.createPlayer(newPlayerRequest)
-    //     .then((res) => {
-    //     console.log(res);  
-    //     setNewPlayer(res);
-    //     })
-    //     .catch(err => console.error(err));
-    // }, []);
-
-    return (
-        <div>{
-            team.map((player, index) =>
-                <div className="flex items-center gap-3" key={player.id}>
-                    <RadioGroupItem className="text-white" value={player.name} key={index} id={`player-${index}`} />
-                    <Label className="text-white" htmlFor={`player-${index}`}>{player.name}</Label>
-                </div>)
-        }</div>
-    )
+function GetPlayers({ players }: { players: Player[] }) {
+  return (
+    <div>
+      {players.map((player) => (
+        <div className="flex items-center gap-3" key={player.id}>
+          <RadioGroupItem
+            className="text-white"
+            value={player.id.toString()}
+            id={player.id.toString()}
+          />
+          <Label className="text-white" htmlFor={player.id.toString()}>
+            {player.name}
+          </Label>
+        </div>
+      ))}
+    </div>
+  );
 }
 
 export default function RadioGroupDemo() {
-    const [teamA, setTeamA] = useState("")
-    const [teamB, setTeamB] = useState("")
+  const [players, setPlayers] = useState<Player[]>([]);
+  const [playerA, setPlayerA] = useState<Player>();
+  const [playerB, setPlayerB] = useState<Player>();
 
-    let navigate = useNavigate();
-    const routeChange = () => {
-        if (teamA == "" || teamB == "")
-            return
-        let path = `/game-play`;
-        navigate(path, { state: { teamA: teamA, teamB: teamB } });
+  let navigate = useNavigate();
+
+  useEffect(() => {
+    PlayerRepository()
+      .getPlayers()
+      .then((res) => setPlayers(res))
+      .catch((err) => console.error(err));
+  }, []);
+
+  let half = Math.ceil(players.length / 2);
+  let PlayerA = players.slice(0, half);
+  let PlayerB = players.slice(half);
+
+  const generateMatch = async () => {
+    if (playerA == null || playerB == null) {
+      alert("Please select players for match.");
+      return;
     }
+    const match = await MatchRepository().createMatch({ players: [playerA.id, playerB.id] });
+    return match;
+  };
 
-    return (
-        <div className="relative min-h-screen">
-            <div className="pointer-events-none absolute inset-0 -z-10">
-                <StarsBackground />
-            </div>
-            <div className="min-h-screen flex flex-col items-center justify-center gap-6 bg-muted p-4">
-                <div className="flex gap-4">
-                    <RadioGroup defaultValue="comfortable" onValueChange={setTeamA}>
-                        <GetPlayers teamType="TeamA" />
-                    </RadioGroup>
-                    <RadioGroup defaultValue="comfortable" onValueChange={setTeamB}>
-                        <GetPlayers teamType="TeamB" />
-                    </RadioGroup>
-                </div>
-                <Button className="bg-orange-300 hover:bg-orange-400 text-black font-semibold" onClick={routeChange}>
-                    Begin Play!
-                </Button>
-            </div>
+  const routeChange = async () => {
+    if (playerA == null || playerB == null) return;
+    const match = await generateMatch();
+    let path = `/game-play`;
+    navigate(path, { state: { playerA, playerB, match } });
+  };
+
+  return (
+    <div className="relative min-h-screen">
+      <div className="pointer-events-none absolute inset-0 -z-10">
+        <StarsBackground />
+      </div>
+      <div className="min-h-screen flex flex-col items-center justify-center gap-6 bg-muted p-4">
+        <div className="flex gap-4">
+          <RadioGroup
+            value={playerA?.id.toString()}
+            onValueChange={(val) =>
+              setPlayerA(players.find((player) => player.id.toString() === val))
+            }
+          >
+            <GetPlayers players={PlayerA} />
+          </RadioGroup>
+
+          <RadioGroup
+            value={playerB?.id.toString()}
+            onValueChange={(val) =>
+              setPlayerB(players.find((player) => player.id.toString() === val))
+            }
+          >
+            <GetPlayers players={PlayerB} />
+          </RadioGroup>
         </div>
-    )
+        <Button
+          className="bg-orange-300 hover:bg-orange-400 text-black font-semibold"
+          onClick={routeChange}
+        >
+          Begin Play!
+        </Button>
+      </div>
+    </div>
+  );
 }

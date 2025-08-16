@@ -6,7 +6,7 @@ services:
     ports:
       - "8080:8000"
     volumes: 
-      - ./data:/usr/src/app/data
+      - ./back_end/database.db:/code/database.db
     container_name: backend
 
 

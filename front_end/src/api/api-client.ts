@@ -1,23 +1,46 @@
-// Inspired by 
+// Inspired by
 // https://www.newline.co/@bespoyasov/how-to-use-fetch-with-typescript--a81ac257
 // https://javascript.plainenglish.io/building-a-better-react-application-with-repository-and-adapter-design-patterns-3e089f43fbc8
 
 const ApiClient = (baseUrl: string) => {
+  async function GET<TResponse>(endpoint: string): Promise<TResponse> {
+    const response = await fetch(baseUrl + endpoint);
+    return (await response.json()) as TResponse;
+  }
 
-    async function GET<TResponse>(endpoint: string) : Promise<TResponse> {
-        const response = await fetch(baseUrl+endpoint);
-        return (response.json()) as TResponse;
-    }
-    
-    async function POST<TRequest extends BodyInit, TResponse>(endpoint: string, body:TRequest) : Promise<TResponse> {
-        const response = await fetch(baseUrl+endpoint, {method: 'POST', body: body, headers: {"Content-Type": "application/json"}});
-        return (response.json()) as TResponse;
-    }
+  async function POST<TRequest extends BodyInit, TResponse>(
+    endpoint: string,
+    body: TRequest,
+  ): Promise<TResponse> {
+    const response = await fetch(baseUrl + endpoint, {
+      method: "POST",
+      body: body,
+      headers: { "Content-Type": "application/json" },
+    });
+    return (await response.json()) as TResponse;
+  }
 
-    return {
-        get: <TResponse>(endpoint: string) => GET<TResponse>(endpoint),
-        post: <TRequest, TResponse>(endpoint:string, body:TRequest) => POST<BodyInit, TResponse>(endpoint, JSON.stringify(body)),
-    }
-}
+  async function PATCH<TRequest extends BodyInit, TResponse>(
+    endpoint: string,
+    body: TRequest,
+  ): Promise<TResponse> {
+    const response = await fetch(baseUrl + endpoint, {
+      method: "PATCH",
+      body: body,
+      headers: { "Content-Type": "application/json" },
+    });
+    return (await response.json()) as TResponse;
+  }
 
-export default ApiClient;
+  return {
+    get: <TResponse>(endpoint: string) => GET<TResponse>(endpoint),
+    post: <TRequest, TResponse>(endpoint: string, body: TRequest) =>
+      POST<BodyInit, TResponse>(endpoint, JSON.stringify(body)),
+    patch: <TRequest, TResponse>(endpoint: string, body: TRequest) =>
+      PATCH<BodyInit, TResponse>(endpoint, JSON.stringify(body)),
+  };
+};
+
+const api = ApiClient("http://localhost:8000");
+
+export default api;
