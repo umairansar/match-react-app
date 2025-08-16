@@ -31,6 +31,7 @@ export default function RadioGroupDemo() {
   const [players, setPlayers] = useState<Player[]>([]);
   const [playerA, setPlayerA] = useState<Player>();
   const [playerB, setPlayerB] = useState<Player>();
+  const [matchId, setMatchId] = useState<Number | null>(null);
 
   let navigate = useNavigate();
 
@@ -45,21 +46,21 @@ export default function RadioGroupDemo() {
   let PlayerA = players.slice(0, half);
   let PlayerB = players.slice(half);
 
-  const generateMatch = () => {
+  const generateMatch = async () => {
     if (playerA == null || playerB == null) {
       alert("Please select players for match.");
       return;
     }
-  
-    MatchRepository().createMatch({ players: [playerA.id, playerB.id] });
-    console.log(`Match generated with Player A: ${playerA.name} vs Player B: ${playerB.name}`);
+    const match = await MatchRepository().createMatch({ players: [playerA.id, playerB.id] });
+    setMatchId(match.id);
+    return match;
   };
 
-  const routeChange = () => {
+  const routeChange = async () => {
     if (playerA == null || playerB == null) return;
-    generateMatch();
+    const match = await generateMatch();
     let path = `/game-play`;
-    navigate(path, { state: { playerA, playerB } });
+    navigate(path, { state: { playerA, playerB, matchId: match?.id } });
   };
 
   return (
